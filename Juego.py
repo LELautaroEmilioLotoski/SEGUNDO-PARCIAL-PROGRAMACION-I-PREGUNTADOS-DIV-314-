@@ -71,6 +71,10 @@ def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],
     if datos_juego["tiempo_restante"] == 0:
         ventana = "terminado"
     
+    
+    print("lista_comodines:", lista_comodines)
+
+    
     #c.Dibujar elementos en pantalla
     dibujar_pantalla_juego(pantalla,datos_juego,cuadro_pregunta,lista_respuestas,lista_comodines,pregunta_actual)    
 
