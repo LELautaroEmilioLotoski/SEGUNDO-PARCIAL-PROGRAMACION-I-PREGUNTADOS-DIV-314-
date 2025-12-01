@@ -1,6 +1,3 @@
-
-# NO FUE NECESARIO COMENTAR NADA
-
 import pygame
 from Constantes import *
 from Funciones import *
