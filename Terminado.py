@@ -49,7 +49,8 @@ def mostrar_game_over(pantalla, cola_eventos, datos_juego):
     # -------- BOTON DE GUARDAR PARTIDA --------
     mostrar_texto(
     boton_guardar_partida["superficie"], "Guardar partida", (15, 6), FUENTE_ARIAL_20, COLOR_BLANCO)
-    pantalla.blit(boton_guardar_partida["superficie"], boton_guardar_partida["rectangulo"])
+    pantalla.blit(boton_guardar_partida["superficie"], boton_guardar_partida["rectangulo"]
+    )
 
     # -------- MENSAJE DE ERROR PERMANENTE --------
     if datos_juego["error_nombre"]:
