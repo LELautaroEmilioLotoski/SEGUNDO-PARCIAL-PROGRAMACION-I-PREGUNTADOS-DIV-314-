@@ -47,11 +47,42 @@ def crear_datos_juego() -> dict:
         "doble_chance_activo":False,
         "indice_shield":None,
         "indice_bomba_1":None,
-        "indice_bomba_2":None
+        "indice_bomba_2":None,
+        "contador_correctas": 0
     }
+    
 
     return datos_juego
 
+#obtenemos las preguntas desde un archivo csv
+def cargar_preguntas_desde_csv(ruta:str) -> list:
+    if type(ruta) == str:
+        lista = []
+        #abrimos el archivo en modo lectura
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            encabezado = True
+            #iteramos sobre el archivo csv
+            for linea in archivo:
+                if encabezado:
+                    encabezado = False
+                    continue
+                
+                #eliminamos los espacios que haya y dividimos los strings por comas
+                partes = linea.strip().split(",")
+                #creamos el diccionario
+                pregunta = {
+                    "descripcion": partes[0],
+                    "respuesta_1": partes[1],
+                    "respuesta_2": partes[2],
+                    "respuesta_3": partes[3],
+                    "respuesta_4": partes[4],
+                    "respuesta_correcta": int(partes[5])
+                }
+                #guardamos el diccionario creado dentro de la lista
+                lista.append(pregunta)
+        
+        #retornamos la lista
+        return lista
 
 #Actualiza el tiempo
 def actualizar_tiempo(tiempo_inicio:float,datos_juego:dict) -> bool:
@@ -85,29 +116,21 @@ def modificar_puntuacion(datos_juego:dict,incremento:int) -> bool:
 
     return retorno
 
-def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,sonido_acierto:pygame.mixer.Sound,sonido_error:pygame.mixer.Sound) -> bool:
+def sumar_vida(pregunta_actual:dict,datos_juego:dict) -> bool:
     if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
-        retorno = True
+        # AGREGAMOS UNA VIDA MAS
+        modificar_vida(datos_juego, 1)
+        datos_juego["contador_correctas"] = 0   # reiniciar
 
+    else:
+        modificar_vida(datos_juego,-1)
+                
+#Verifico que la respuesta sea correcta
+def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,sonido_acierto:pygame.mixer.Sound,sonido_error:pygame.mixer.Sound) -> bool:
+
+    if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
         if pregunta_actual.get("respuesta_correcta") == respuesta:
-            modificar_puntuacion(datos_juego,100)
             datos_juego["contador_correctas"] += 1
-
-            # AVERIGUAMOS SI LA CANTIDAD DE RESPUESTAS CORRECTAS ES 5 Y DE SER ASÍ, AGREGAMOS UNA VIDA MAS
-            if datos_juego["contador_correctas"] == 5:
-                modificar_vida(datos_juego, 1)
-                datos_juego["contador_correctas"] = 0   # reiniciar
-
-            sonido_acierto.play()
-        else:
-            modificar_puntuacion(datos_juego,-25)
-            modificar_vida(datos_juego,-1)
-            sonido_error.play()
-#Verifrico que la respuesta sea correcta
-def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,sonido_acierto:pygame.mixer.Sound,sonido_error:pygame.mixer.Sound) -> bool:
-
-    if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
-        if pregunta_actual.get("respuesta_correcta") == respuesta:
             datos_juego["doble_chance_activo"] = False
             if datos_juego["comodin_x2"] == True and datos_juego["bandera_x2"] == False:
                 datos_juego["bandera_x2"] = True
@@ -117,6 +140,9 @@ def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,soni
                 modificar_puntuacion(datos_juego,100)
                 sonido_acierto.play()
             retorno = True
+            if datos_juego["contador_correctas"] == 5:
+                # AVERIGUAMOS SI LA CANTIDAD DE RESPUESTAS CORRECTAS ES 5 Y DE SER ASÍ, AGREGAMOS UNA VIDA MAS
+                sumar_vida(pregunta_actual, datos_juego)
         else:
             if (datos_juego["comodin_shield"] == True or datos_juego["comodin_shield"] == False) and datos_juego["doble_chance_activo"] == False:
                 sonido_error.play()
@@ -360,7 +386,7 @@ def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregu
         if (i != datos_juego["indice_bomba_1"] and i != datos_juego["indice_bomba_2"] and i != datos_juego["indice_shield"]):
             mostrar_texto(lista_respuestas[i]["superficie"],f"{pregunta_actual.get(f"respuesta_{i+1}")}",(10,10),FUENTE_ARIAL_20,COLOR_BLANCO)
             pantalla.blit(lista_respuestas[i]["superficie"],lista_respuestas[i]["rectangulo"])
-
+    
     mostrar_comodines(lista_comodines,pantalla,datos_juego)
 
 
@@ -520,7 +546,7 @@ def musica_activa(datos_juego:dict) -> bool:
 
             try:
                 pygame.mixer.init()
-                pygame.mixer.music.load("MENU PYGAME 314/sonidos/musica.mp3")
+                pygame.mixer.music.load("sonidos/musica.mp3")
                 volumen = datos_juego.get("volumen_musica",0) / 100
                 pygame.mixer.music.set_volume(volumen)
                 pygame.mixer.music.play(-1)

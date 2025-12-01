@@ -4,12 +4,19 @@ from Funciones import *
 
 pygame.init()
 
-boton_on = crear_elemento_juego("MENU PYGAME 314/texturas/ON.png", 120, 90, 430, 80)
-boton_off = crear_elemento_juego("MENU PYGAME 314/texturas/OFF.png", 120, 90, 430, 80)
-boton_suma = crear_elemento_juego("MENU PYGAME 314/texturas/mas.webp",60,60,250,200)
-boton_resta = crear_elemento_juego("MENU PYGAME 314/texturas/menos.webp",60,60,50,200)
-boton_volver = crear_elemento_juego("MENU PYGAME 314/texturas/textura_respuesta.jpg",100,40,10,10)
-fondo_prueba = crear_elemento_juego("MENU PYGAME 314/texturas/Fondo_de_prueba.png",500,200,50,70)
+# boton_on = crear_elemento_juego("MENU PYGAME 314/texturas/ON.png", 120, 90, 430, 80)
+# boton_off = crear_elemento_juego("MENU PYGAME 314/texturas/OFF.png", 120, 90, 430, 80)
+# boton_suma = crear_elemento_juego("MENU PYGAME 314/texturas/mas.webp",60,60,250,200)
+# boton_resta = crear_elemento_juego("MENU PYGAME 314/texturas/menos.webp",60,60,50,200)
+# boton_volver = crear_elemento_juego("MENU PYGAME 314/texturas/textura_respuesta.jpg",100,40,10,10)
+# fondo_prueba = crear_elemento_juego("MENU PYGAME 314/texturas/Fondo_de_prueba.png",500,200,50,70)
+
+boton_on = crear_elemento_juego("texturas/ON.png", 120, 90, 430, 80)
+boton_off = crear_elemento_juego("texturas/OFF.png", 120, 90, 430, 80)
+boton_suma = crear_elemento_juego("texturas/mas.webp",60,60,250,200)
+boton_resta = crear_elemento_juego("texturas/menos.webp",60,60,50,200)
+boton_volver = crear_elemento_juego("texturas/textura_respuesta.jpg",100,40,10,10)
+fondo_prueba = crear_elemento_juego("texturas/Fondo_de_prueba.png",500,200,50,70)
 
 
 
@@ -62,8 +69,8 @@ def mostrar_ajustes(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event
     pantalla.blit(boton_resta["superficie"],boton_resta["rectangulo"])
     pantalla.blit(boton_volver["superficie"],boton_volver["rectangulo"])
     
-    mostrar_texto(pantalla,f"{datos_juego["volumen_musica"]} %",(130,200),FUENTE_ARIAL_50,COLOR_NEGRO)
-    mostrar_texto(pantalla,"Musica",(70,100),FUENTE_ARIAL_50,COLOR_NEGRO)
+    mostrar_texto(pantalla,f"{datos_juego["volumen_musica"]} %",(130,200),FUENTE_ARIAL_50,COLOR_BLANCO)
+    mostrar_texto(pantalla,"Musica",(70,100),FUENTE_ARIAL_50,COLOR_BLANCO)
     mostrar_texto(boton_volver["superficie"],"VOLVER",(5,5),FUENTE_ARIAL_20,COLOR_BLANCO)
 
     return ventana
