@@ -1,0 +1,107 @@
+[
+    {
+        "nombre": "juan",
+        "puntuacion": 125,
+        "fecha": "2025-11-30 20:13:45"
+    },
+    {
+        "nombre": "maria",
+        "puntuacion": 310,
+        "fecha": "2025-11-29 18:22:10"
+    },
+    {
+        "nombre": "lucas",
+        "puntuacion": 87,
+        "fecha": "2025-11-28 15:45:33"
+    },
+    {
+        "nombre": "sofia",
+        "puntuacion": 402,
+        "fecha": "2025-11-27 21:14:02"
+    },
+    {
+        "nombre": "martin",
+        "puntuacion": 230,
+        "fecha": "2025-11-26 12:55:41"
+    },
+    {
+        "nombre": "agustina",
+        "puntuacion": 190,
+        "fecha": "2025-11-25 10:05:18"
+    },
+    {
+        "nombre": "valentino",
+        "puntuacion": 510,
+        "fecha": "2025-11-24 23:41:59"
+    },
+    {
+        "nombre": "camila",
+        "puntuacion": 178,
+        "fecha": "2025-11-23 19:30:44"
+    },
+    {
+        "nombre": "matias",
+        "puntuacion": 260,
+        "fecha": "2025-11-22 09:27:15"
+    },
+    {
+        "nombre": "lorena",
+        "puntuacion": 340,
+        "fecha": "2025-11-21 20:18:37"
+    },
+    {
+        "nombre": "franco",
+        "puntuacion": 75,
+        "fecha": "2025-11-20 14:02:29"
+    },
+    {
+        "nombre": "carla",
+        "puntuacion": 455,
+        "fecha": "2025-11-19 17:44:51"
+    },
+    {
+        "nombre": "nahuel",
+        "puntuacion": 389,
+        "fecha": "2025-11-18 11:18:05"
+    },
+    {
+        "nombre": "julieta",
+        "puntuacion": 245,
+        "fecha": "2025-11-17 08:57:40"
+    },
+    {
+        "nombre": "tomas",
+        "puntuacion": 130,
+        "fecha": "2025-11-16 16:25:33"
+    },
+    {
+        "nombre": "abril",
+        "puntuacion": 520,
+        "fecha": "2025-11-15 22:10:12"
+    },
+    {
+        "nombre": "gabriel",
+        "puntuacion": 298,
+        "fecha": "2025-11-14 13:35:47"
+    },
+    {
+        "nombre": "bianca",
+        "puntuacion": 195,
+        "fecha": "2025-11-13 07:23:19"
+    },
+    {
+        "nombre": "emiliano",
+        "puntuacion": 420,
+        "fecha": "2025-11-12 18:59:06"
+    },
+    {
+        "nombre": "natalia",
+        "puntuacion": 367,
+        "fecha": "2025-11-11 20:43:55"
+    },
+    {
+        "nombre": "rodrigo",
+        "puntuacion": 156,
+        "fecha": "2025-11-10 10:12:30"
+    }
+]
