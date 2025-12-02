@@ -2,7 +2,6 @@ import pygame
 from Constantes import *
 from Funciones import *
 
-#Crea la lista de botones del menu
 def crear_lista_botones(cantidad_botones:int,textura:str,ancho:int,alto:int,x:int,y:int) -> list | None:
     if os.path.exists(textura):
         lista_botones = []
@@ -18,11 +17,11 @@ def crear_lista_botones(cantidad_botones:int,textura:str,ancho:int,alto:int,x:in
 
 pygame.init()
 #FONDO
-fondo_menu = pygame.image.load("MENU PYGAME 314/texturas/fondo.jpg")
+fondo_menu = pygame.image.load("texturas/fondo.jpg")
 fondo_menu = pygame.transform.scale(fondo_menu,PANTALLA)
 
 #BOTONES
-lista_botones = crear_lista_botones(4,"MENU PYGAME 314/texturas/textura_respuesta.jpg",ANCHO_BOTON,ALTO_BOTON,150,150)
+lista_botones = crear_lista_botones(4,"texturas/textura_respuesta.jpg",ANCHO_BOTON,ALTO_BOTON,150,150)
 print(lista_botones)
 
 #LISTA AUX

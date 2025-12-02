@@ -2,12 +2,10 @@ import random
 import os
 import time
 from Constantes import *
-import datetime
+from datetime import datetime
+import json
 import pygame
 
-
-
-#Muestra el texto que el pasemos (Funcion general)
 def mostrar_texto(surface, text, pos, font, color=pygame.Color('black')):
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
     space = font.size(' ')[0]  # The width of a space.
@@ -25,28 +23,13 @@ def mostrar_texto(surface, text, pos, font, color=pygame.Color('black')):
         x = pos[0]  # Reset the x.
         y += word_height  # Start on new row.
 
-#EN WINDOWS ES cls en vez de clear
-
-#ESPECIFICA --> SOLO CONSOLA
-def limpiar_consola():
-    input("Ingrese cualquier boton para continuar...")
-    borrar()
+def borrar():
+    os.system('clear') #MAC/LINUX
+    os.system('clear')
+    #os.system('cls') #WINDOWS
     #os.system('cls') #WINDOWS
 
-def borrar():
-    # os.system('clear') #MAC/LINUX
-    # os.system('clear')    
-    os.system('cls') #WINDOWS
-    os.system('cls') #WINDOWS
 
-#ESPECIFICA --> SOLO CONSOLA
-def pedir_numero_consola(mensaje:str,mensaje_error:str,minimo:int,maximo:int) -> int:
-    numero_ingresado = int(input(mensaje))
-    while numero_ingresado > maximo or numero_ingresado < minimo:
-        numero_ingresado = int(input(mensaje_error))
-    return numero_ingresado
-
-#Crea los datos del juego
 def crear_datos_juego() -> dict:
     datos_juego = {
         "nombre":"",
@@ -64,49 +47,42 @@ def crear_datos_juego() -> dict:
         "doble_chance_activo":False,
         "indice_shield":None,
         "indice_bomba_1":None,
-        "indice_bomba_2":None
+        "indice_bomba_2":None,
+        "contador_correctas": 0
     }
     
+
     return datos_juego
 
-
-#ESPECIFICA --> SOLO CONSOLA
-def mostrar_pregunta_consola(pregunta_actual:dict) -> bool:
-    if type(pregunta_actual) == dict:
-        retorno = True
-        print(f"{pregunta_actual.get("descripcion","Dato no encontrado")}\n")
-        print(f"1.{pregunta_actual.get("respuesta_1","Dato no encontrado")}")
-        print(f"2.{pregunta_actual.get("respuesta_2","Dato no encontrado")}")
-        print(f"3.{pregunta_actual.get("respuesta_3","Dato no encontrado")}\n")
-    else:
-        retorno = False
+#obtenemos las preguntas desde un archivo csv
+def cargar_preguntas_desde_csv(ruta:str) -> list:
+    if type(ruta) == str:
+        lista = []
+        #abrimos el archivo en modo lectura
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            encabezado = True
+            #iteramos sobre el archivo csv
+            for linea in archivo:
+                if encabezado:
+                    encabezado = False
+                    continue
+                
+                #eliminamos los espacios que haya y dividimos los strings por comas
+                partes = linea.strip().split(",")
+                #creamos el diccionario
+                pregunta = {
+                    "descripcion": partes[0],
+                    "respuesta_1": partes[1],
+                    "respuesta_2": partes[2],
+                    "respuesta_3": partes[3],
+                    "respuesta_4": partes[4],
+                    "respuesta_correcta": int(partes[5])
+                }
+                #guardamos el diccionario creado dentro de la lista
+                lista.append(pregunta)
         
-    return retorno
-
-
-#ESPECIFICA --> SOLO CONSOLA
-def jugar_preguntados_consola(lista_preguntas:list,datos_juego:dict) -> bool:    
-    if type(lista_preguntas) == list and len(lista_preguntas) > 0 and type(datos_juego) == dict:
-        retorno = True
-        mezclar_lista(lista_preguntas)
-        
-        inicio = time.time()
-        while datos_juego.get("cantidad_vidas",0) > 0 and datos_juego.get("tiempo_restante",0) > 0:
-            pregunta_actual = obtener_pregunta_actual(datos_juego,lista_preguntas)
-            mostrar_datos_juego_consola(datos_juego)
-            mostrar_pregunta_consola(pregunta_actual)
-            respuesta = pedir_numero_consola("Su opcion: ","Invalido\nReingrese opcion (1-3): ",1,3)
-            verificar_respuesta(pregunta_actual,datos_juego,respuesta)
-            mostrar_resultado_consola(pregunta_actual,respuesta)
-            pasar_pregunta(datos_juego,lista_preguntas)
-            actualizar_tiempo(inicio,datos_juego)
-        
-        terminar_juego(datos_juego) 
-    else:
-        retorno = False
-        
-    return retorno
-
+        #retornamos la lista
+        return lista
 
 #Actualiza el tiempo
 def actualizar_tiempo(tiempo_inicio:float,datos_juego:dict) -> bool:
@@ -117,11 +93,8 @@ def actualizar_tiempo(tiempo_inicio:float,datos_juego:dict) -> bool:
         datos_juego["tiempo_restante"] = TIEMPO_TOTAL - lapso_tiempo
     else:
         retorno = False
-        
-    return retorno
-    
 
-#Pueden hacerla más general --> modificar_dato_juego()
+    return retorno
 
 #Modifica la vida
 def modificar_vida(datos_juego:dict,incremento:int) -> bool:
@@ -130,24 +103,35 @@ def modificar_vida(datos_juego:dict,incremento:int) -> bool:
         datos_juego["cantidad_vidas"] += incremento
     else:
         retorno = False
-        
+
     return retorno
 
-#Modifica la puntuacion  
+#Modifica la puntuacion
 def modificar_puntuacion(datos_juego:dict,incremento:int) -> bool:
     if type(datos_juego) == dict and datos_juego.get("puntuacion") != None:
         retorno = True
         datos_juego["puntuacion"] += (incremento)
     else:
         retorno = False
-        
+
     return retorno
 
-#Verifrico que la respuesta sea correcta
+# SUMA UNA VIDA SI RESPONDIÓ CORRECTAMENTE 5 VECES SEGUIDAS
+def sumar_vida(pregunta_actual:dict,datos_juego:dict) -> bool:
+    if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
+        # AGREGAMOS UNA VIDA MAS
+        modificar_vida(datos_juego, 1)
+        datos_juego["contador_correctas"] = 0   # reiniciar
+
+    else:
+        modificar_vida(datos_juego,-1)
+                
+#Verifico que la respuesta sea correcta
 def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,sonido_acierto:pygame.mixer.Sound,sonido_error:pygame.mixer.Sound) -> bool:
 
     if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
         if pregunta_actual.get("respuesta_correcta") == respuesta:
+            datos_juego["contador_correctas"] += 1
             datos_juego["doble_chance_activo"] = False
             if datos_juego["comodin_x2"] == True and datos_juego["bandera_x2"] == False:
                 datos_juego["bandera_x2"] = True
@@ -155,49 +139,29 @@ def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,soni
                 sonido_acierto.play()
             else:
                 modificar_puntuacion(datos_juego,100)
-                sonido_acierto.play() 
+                sonido_acierto.play()
             retorno = True
+            if datos_juego["contador_correctas"] == 5:
+                # AVERIGUAMOS SI LA CANTIDAD DE RESPUESTAS CORRECTAS ES 5 Y DE SER ASÍ, AGREGAMOS UNA VIDA MAS
+                sumar_vida(pregunta_actual, datos_juego)
         else:
-            if (datos_juego["comodin_shield"] == True or datos_juego["comodin_shield"] == False) and datos_juego["doble_chance_activo"] == False: 
+            if (datos_juego["comodin_shield"] == True or datos_juego["comodin_shield"] == False) and datos_juego["doble_chance_activo"] == False:
                 sonido_error.play()
                 modificar_puntuacion(datos_juego,-25)
                 modificar_vida(datos_juego,-1)
             retorno = False
     else:
         retorno = False
-        
+
     return retorno
 
-#ESPECIFICA --> SOLO CONSOLA        
-def mostrar_resultado_consola(pregunta_actual:dict,respuesta:int) -> bool:
-    if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
-        retorno = True
-        borrar()
-        if pregunta_actual.get("respuesta_correcta") == respuesta:
-            print("RESPUESTA CORRECTA")
-        else:
-            print("RESPUESTA INCORRECTA")
-        limpiar_consola()
-    else:
-        retorno = False
-        
-    return retorno
-
-#ESPECIFICA --> SOLO CONSOLA
-def mostrar_datos_juego_consola(datos_juego:dict) -> bool:
-    if type(datos_juego) == dict:
-        print(f"TIEMPO RESTANTE: {datos_juego.get("tiempo_restante","Dato erroneo")} segundos")
-        print(f"VIDAS: {datos_juego.get("cantidad_vidas","Dato erroneo")}")
-        print(f"PUNTUACION: {datos_juego.get("puntuacion","Dato erroneo")} puntos\n")
-
-#Obtiene la pregunta actual        
 def obtener_pregunta_actual(datos_juego:dict,lista_preguntas:list) -> dict | None:
     if type(lista_preguntas) == list and len(lista_preguntas) > 0 and type(datos_juego) == dict and datos_juego.get("i_pregunta") != None:
         indice = datos_juego.get("i_pregunta")
         pregunta = lista_preguntas[indice]
     else:
         pregunta = None
-    
+
     return pregunta
 
 #Pasa de pregunta
@@ -208,10 +172,9 @@ def pasar_pregunta(datos_juego:dict,lista_preguntas:list) -> bool:
         verificar_indice(datos_juego,lista_preguntas)
     else:
         retorno = False
-        
+
     return retorno
 
-#Reinicia las estadisticas
 def reiniciar_estadisticas(datos_juego:dict) -> bool:
     if type(datos_juego) == dict:
         retorno = True
@@ -222,7 +185,7 @@ def reiniciar_estadisticas(datos_juego:dict) -> bool:
         })
     else:
         retorno = False
-        
+
     return retorno
 
 #Verifica el indice
@@ -231,10 +194,10 @@ def verificar_indice(datos_juego:dict,lista_preguntas:list) -> bool:
         retorno = True
         if datos_juego["i_pregunta"] == len(lista_preguntas):
             datos_juego["i_pregunta"] = 0
-            mezclar_lista(lista_preguntas)    
+            mezclar_lista(lista_preguntas)
     else:
         retorno = False
-        
+
     return retorno
 
 #Mezcla la lista de preguntas
@@ -244,41 +207,77 @@ def mezclar_lista(lista_preguntas:list) -> bool:
         random.shuffle(lista_preguntas)
     else:
         retorno = False
-    
+
     return retorno
 
-#ESPECIFICA --> SOLO CONSOLA
-def terminar_juego(datos_juego:dict) -> bool:
+def guardar_partida(datos_juego:dict) -> bool:
     if type(datos_juego) == dict:
-        pregunta = "si"
-        print(f"Termino el juego con la puntuacion: {datos_juego.get("puntuacion","No hay datos")}")
-        if datos_juego["nombre"] != "":
-            print(f"La anterior partida la jugo: {datos_juego.get("nombre","No hay datos")}")
-            pregunta = input("¿Desea cambiar de usuario?: ")
-        
-        if pregunta == "si":
-            datos_juego["nombre"]  = input("Ingrese el nombre: ")
+
+        # SETEAMOS UN ESTADO PARA GUARDAR EL RESULTADO DE LA VALIDACION DE LA PARTIDA GUARDADA
+        estado = None
+
+        # CREAMOS EL NUEVO DICCIONARIO
+        nueva_partida = {
+            "nombre": datos_juego["nombre"],
+            "puntuacion": datos_juego["puntuacion"],
+            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        # VALIDAMOS QUE HAYA PUESTO UN NOMBRE:
+        if len(nueva_partida["nombre"]) == 0:
+            estado = False
+            return estado
+        else:
+            # CARGAMOS LOS DATOS:
+            cargar_datos(nueva_partida)
+
+        # VALIDAMOS QUE SE HAYA GUARDADO LA PARTIDA CORRECTAMENTE:
+        validacion_de_partida = validacion_partida_guardada(nueva_partida)
+
+        # DEPENDIENDO DEL VALOR DE ESTADO OBTENIDO, LO SETEAMOS
+        if validacion_de_partida == True: estado = True
+        else: estado = False
+
+        # DEVOLVEMOS EL ESTADO OBTENIDO
+        return estado
+
+    print(nueva_partida)
+
+def cargar_datos(nueva_partida_a_cargar:dict) -> None:
+        # VALIDAMOS QUE LOS DATOS DE LA NUEVA PARTIDA SEA UN DICCIONARIO
+        if type(nueva_partida_a_cargar) == dict:
+
+            # LEEMOS EL ARCHIVO PARTIDAS.JSON Y GUARDAMOS EL CONTENIDO EN UNA VARIABLE
+            with open("partidas.json", "r") as archivo:
+                partidas = json.load(archivo)
+
+            # CARGAMOS EL JSON CON LA NUEVA PARTIDA
+            partidas.append(nueva_partida_a_cargar)
+
+            # ESCRIBIMOS EL ARCHIVO JSON CON EL CONTENIDO YA CARGADO
+            with open("partidas.json", "w") as archivo:
+                json.dump(partidas, archivo, indent=4)
+
+def validacion_partida_guardada(nueva_partida:dict) -> bool:
+    # VALIDAMOS QUE LOS DATOS DE LA NUEVA PARTIDA SEA UN DICCIONARIO
+    if type(nueva_partida) == dict:
+        estado = None
+        # LEEMOS EL ARCHIVO PARTIDAS.JSON Y GUARDAMOS EL CONTENIDO EN UNA VARIABLE
+        with open("partidas.json", "r") as archivo:
+            partidas = json.load(archivo)
+
+        # RECORREMOS EL JSON OBTENIDO DEL ARCHIVO
+        for indice, dato in enumerate(partidas):
+
+            # VALIDAMOS QUE LOS DATOS INGRESADOS DE LA NUEVA PARTIDA EXISTAN DENTRO DEL ARCHIVO
+            if (dato["nombre"] == nueva_partida["nombre"] and dato["puntuacion"] == nueva_partida["puntuacion"] and dato["fecha"] == nueva_partida["fecha"]):
+                estado = True # ACTUALIZAMOS ESTADO Y LO RETORNAMOS
+            else:
+                estado = False # ACTUALIZAMOS ESTADO Y LO RETORNAMOS
+        return estado
     
-        #GUARDAN EL RANKING (Puntuacion) --> ANTES DE REINICIAR LAS ESTADISTICAS
-        mostrar_resultado_partida(datos_juego)
-        reiniciar_estadisticas(datos_juego)    
-        print("SE TERMINO EL JUEGO")
-
-#ESPECIFICA --> SOLO CONSOLA       
-def mostrar_resultado_partida(datos_juego:dict) -> bool:
-    if type(datos_juego) == dict:
-        retorno = True
-        print(f"PARTIDA FINALIZADA EL DIA: {datetime.datetime.now()}")
-        print(f"NOMBRE : {datos_juego.get("nombre","No encontrado")}")
-        print(f"PUNTUACION TOTAL : {datos_juego.get("puntuacion","No encontrado")} PUNTOS")
-    else:
-        retorno = False
-        
-    return retorno
-
-#FUNCIONES PYGAME
-
-#GENERAL --> Un elemento de nuestro juego va a tener una superficie (textura) y un rectangulo (coordenadas y su comportamiento)
+    
+#GENERAL --> Un elemento de nuestro juego va a tener una superficie (textura) y un rectangulo (coordenadas y su compotamiento)
 def crear_elemento_juego(textura:str,ancho_elemento:int,alto_elemento:int,pos_x:int,pos_y:int) -> dict | None:
     if os.path.exists(textura):
         elemento_juego = {}
@@ -287,10 +286,10 @@ def crear_elemento_juego(textura:str,ancho_elemento:int,alto_elemento:int,pos_x:
         elemento_juego["rectangulo"] = pygame.rect.Rect(pos_x,pos_y,ancho_elemento,alto_elemento)
     else:
         elemento_juego = None
-    
+
     return elemento_juego
 
-#Muestreo de datos
+#muestro los datos
 def mostrar_datos_juego_pygame(pantalla:pygame.Surface,datos_juego:dict) -> bool:
     if type(datos_juego) == dict:
         mostrar_texto(pantalla,f"Tiempo: {datos_juego.get("tiempo_restante")} segundos",(10,10),FUENTE_ARIAL_20)
@@ -299,7 +298,7 @@ def mostrar_datos_juego_pygame(pantalla:pygame.Surface,datos_juego:dict) -> bool
         retorno = True
     else:
         retorno = False
-        
+
     return retorno
 
 #Crea la lista de respuesta dependiendo la pregunta
@@ -313,13 +312,26 @@ def crear_lista_respuestas(cantidad_respuestas:int,textura:str,ancho:int,alto:in
             y += (alto + 15)
     else:
         lista_respuestas = None
-        
+
     return lista_respuestas
+
+def obtener_ranking() -> list:
+
+    # RECORREMOS EL ARCHIVO PARTIDAS JSON
+    with open("partidas.json", "r") as archivo:
+        partidas = json.load(archivo)
+
+    # ORDENA LA LISTA COMPLETA POR PUNTUACIÓN
+    partidas_ordenadas = sorted(partidas, key=lambda p: p["puntuacion"], reverse=True)
+
+    # RETORNAMOS 10 DE LAS PARTIDAS FILTRADAS POR PUNTUACIÓN
+    return partidas_ordenadas[:10]
+
 
 #Revisa que bloque de respuesta se clickeo
 def responder_pregunta_pygame(lista_respuestas:list,sonido_acierto:pygame.mixer.Sound,sonido_error: pygame.mixer.Sound,pos_mouse:tuple,lista_preguntas:list,pregunta_actual:dict,datos_juego:dict):
     #Validar todo que sea correcto
-    
+
     #DEVUELVE VERDADERO SI LE DI CLICK A UNA RESPUESTA
     #DEVUELVE FALSE SI LE DI CLICK FUERA DE UNA RESPUESTA
     retorno = False
@@ -337,7 +349,7 @@ def responder_pregunta_pygame(lista_respuestas:list,sonido_acierto:pygame.mixer.
             else:
                 pasar_pregunta(datos_juego,lista_preguntas)
             retorno = True
-            
+
     return retorno
 
 def mostrar_comodines(lista_comodines:list,pantalla:pygame.Surface,datos_juego:dict) -> None:
@@ -358,15 +370,15 @@ def mostrar_comodines(lista_comodines:list,pantalla:pygame.Surface,datos_juego:d
         if i == 3 and datos_juego["comodin_x2"] == True:
             continue
 
-        pantalla.blit(lista_comodines[i]["superficie"],lista_comodines[i]["rectangulo"])   
+        pantalla.blit(lista_comodines[i]["superficie"],lista_comodines[i]["rectangulo"])
 
-        
+
 #Muestra la pantalla de juego
 def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregunta:dict,lista_respuestas:dict,lista_comodines:list,pregunta_actual:dict) -> None:
     pantalla.fill(COLOR_BLANCO)
     mostrar_datos_juego_pygame(pantalla,datos_juego)
-    
-    
+
+
     mostrar_texto(cuadro_pregunta["superficie"],f"{pregunta_actual["descripcion"]}",(20,20),FUENTE_ARIAL_30)
     pantalla.blit(cuadro_pregunta["superficie"],cuadro_pregunta["rectangulo"])
 
@@ -374,7 +386,7 @@ def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregu
         if (i != datos_juego["indice_bomba_1"] and i != datos_juego["indice_bomba_2"] and i != datos_juego["indice_shield"]):
             mostrar_texto(lista_respuestas[i]["superficie"],f"{pregunta_actual.get(f"respuesta_{i+1}")}",(10,10),FUENTE_ARIAL_20,COLOR_BLANCO)
             pantalla.blit(lista_respuestas[i]["superficie"],lista_respuestas[i]["rectangulo"])
-
+    
     mostrar_comodines(lista_comodines,pantalla,datos_juego)
 
 
@@ -401,13 +413,13 @@ def activar_bomba(datos_juego:dict,lista_respuestas:list,pregunta_actual:dict) -
             return False
         if type(pregunta_actual["respuesta_correcta"]) != int:
             return False
-        
+
         respuesta_correcta = pregunta_actual["respuesta_correcta"]
 
         if respuesta_correcta < 1 or respuesta_correcta > len(lista_respuestas):
             return False
-        
-        
+
+
         for x in range(len(lista_respuestas)):
             if (x+1) != respuesta_correcta:
                 lista_incorrectas.append(x)
@@ -419,7 +431,7 @@ def activar_bomba(datos_juego:dict,lista_respuestas:list,pregunta_actual:dict) -
             a_eliminar = random.sample(lista_incorrectas, 2)
         except:
             return False
-        
+
         datos_juego["comodin_bomba"] = True
         datos_juego["indice_bomba_1"] = a_eliminar[0]
         datos_juego["indice_bomba_2"] = a_eliminar[1]
@@ -428,7 +440,7 @@ def activar_bomba(datos_juego:dict,lista_respuestas:list,pregunta_actual:dict) -
 
     else:
         return False
-    
+
 
 
 
@@ -442,17 +454,17 @@ def activar_x2(datos_juego:dict) -> bool:
         bool: Retorna True o False si todo se pudo hacer correctamente
     """
     if type(datos_juego) == dict and ("comodin_x2" in datos_juego) and (type(datos_juego["comodin_x2"]) == bool):
-        
+
         retorno = True
         if datos_juego["comodin_x2"] == False:
             datos_juego["comodin_x2"] = True
 
     else:
         retorno = False
-    
+
     return retorno
-    
-    
+
+
 
 def activar_pass(datos_juego:dict,lista_preguntas:dict) -> bool:
     """Activa el comodin de pasar pregunta
@@ -474,7 +486,7 @@ def activar_pass(datos_juego:dict,lista_preguntas:dict) -> bool:
             datos_juego["indice_bomba_2"] = None
     else:
         retorno = False
-    
+
     return retorno
 
 
@@ -489,7 +501,7 @@ def activar_shield(datos_juego:dict) -> bool:
         bool: Retorna True o False si todo se pudo hacer correctamente
     """
     if (type(datos_juego) == dict) and ("comodin_shield" in datos_juego) and ("doble_chance_activo" in datos_juego) and (type(datos_juego["comodin_shield"]) == bool) and (type(datos_juego["doble_chance_activo"]) == bool):
-        
+
         retorno = True
         if datos_juego["comodin_shield"] == False:
             datos_juego["comodin_shield"] = True
@@ -497,9 +509,9 @@ def activar_shield(datos_juego:dict) -> bool:
 
     else:
         retorno = False
-    
+
     return retorno
-    
+
 def reiniciar_indice_bomba(datos_juego:dict) -> bool:
     """Reinicio los indices del comodin bomba
 
@@ -510,14 +522,14 @@ def reiniciar_indice_bomba(datos_juego:dict) -> bool:
         bool: Retorna True o False si todo se pudo hacer correctamente
     """
     if (type(datos_juego) == dict) and ("comodin_bomba" in datos_juego) and ("indice_bomba_1" in datos_juego) and ("indice_bomba_2" in datos_juego) and (type(datos_juego["comodin_bomba"]) == bool):
-        
+
         retorno = True
         if datos_juego["comodin_bomba"] == True:
             datos_juego["indice_bomba_1"] = None
-            datos_juego["indice_bomba_2"] = None 
-    else: 
+            datos_juego["indice_bomba_2"] = None
+    else:
         retorno = False
-    
+
     return retorno
 
 def musica_activa(datos_juego:dict) -> bool:
@@ -534,7 +546,7 @@ def musica_activa(datos_juego:dict) -> bool:
 
             try:
                 pygame.mixer.init()
-                pygame.mixer.music.load("MENU PYGAME 314/sonidos/musica.mp3")
+                pygame.mixer.music.load("sonidos/musica.mp3")
                 volumen = datos_juego.get("volumen_musica",0) / 100
                 pygame.mixer.music.set_volume(volumen)
                 pygame.mixer.music.play(-1)
@@ -542,5 +554,5 @@ def musica_activa(datos_juego:dict) -> bool:
             except pygame.error as e:
                 print(f"Error en Pygame: No se pudo cargar o reproducir la música. {e}")
                 return False
-        
+
         return True

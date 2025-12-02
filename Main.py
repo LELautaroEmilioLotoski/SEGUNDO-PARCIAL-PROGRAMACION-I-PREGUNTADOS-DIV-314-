@@ -12,8 +12,9 @@ from Terminado import *
 
 pygame.init()
 pygame.display.set_caption("PREGUNTADOS")
-icono = pygame.image.load("MENU PYGAME 314/texturas/icono.png")
+icono = pygame.image.load("texturas/icono.png")
 pygame.display.set_icon(icono)
+lista_preguntas = cargar_preguntas_desde_csv("preguntas.csv")
 
 pantalla = pygame.display.set_mode(PANTALLA)
 #Lo único global en todas las ventanas va a ser siempre los datos del juego
@@ -42,7 +43,7 @@ while True:
             musica_activa(datos_juego)
             random.shuffle(lista_preguntas)
             bandera_juego = True
-        ventana_actual = mostrar_juego(pantalla,cola_eventos,datos_juego)
+        ventana_actual = mostrar_juego(pantalla,cola_eventos,datos_juego,lista_preguntas)
     elif ventana_actual == "rankings":
         ventana_actual = mostrar_rankings(pantalla,cola_eventos,lista_rankings)        
     elif ventana_actual == "ajustes":

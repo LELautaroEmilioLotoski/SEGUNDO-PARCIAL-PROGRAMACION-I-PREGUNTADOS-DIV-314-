@@ -18,6 +18,7 @@ ANCHO_RESPUESTA = 200
 ALTO_RESPUESTA = 60
 ANCHO_BOTON = 300
 ALTO_BOTON = 60
+CANTIDAD_DE_POSIBLES_RESPUESTAS = 4
 
 TIEMPO_TOTAL = 30
 
@@ -37,6 +38,6 @@ FUENTE_ARIAL_50 = pygame.font.SysFont("Arial",50)
 
 #SONIDOS
 
-CLICK_SONIDO = pygame.mixer.Sound("MENU PYGAME 314/sonidos/click.mp3")
-ERROR_SONIDO = pygame.mixer.Sound("MENU PYGAME 314/sonidos/error.mp3")
+CLICK_SONIDO = pygame.mixer.Sound("sonidos/click.mp3")
+ERROR_SONIDO = pygame.mixer.Sound("sonidos/error.mp3")
 
