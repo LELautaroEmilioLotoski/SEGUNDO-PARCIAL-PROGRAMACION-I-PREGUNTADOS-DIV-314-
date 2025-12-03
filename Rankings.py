@@ -18,7 +18,6 @@ def mostrar_rankings(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Even
                     CLICK_SONIDO.play()
                     ventana = "menu"
                     
-    
     pantalla.fill(COLOR_BLANCO)
     
     # OBTENEMOS EL RANKING DE LAS 10 MEJORES PUNTUACIONES
