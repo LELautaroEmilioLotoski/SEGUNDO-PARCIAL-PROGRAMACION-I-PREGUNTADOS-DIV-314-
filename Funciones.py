@@ -7,6 +7,17 @@ import json
 import pygame
 
 def mostrar_texto(surface, text, pos, font, color=pygame.Color('black')):
+    """
+    Renderiza texto con salto de línea automático según el ancho disponible
+    en la superficie, dibujándolo palabra por palabra.
+
+    Args:
+        surface (pygame.Surface): Superficie donde se dibuja el texto.
+        text (str): Texto a mostrar (puede incluir saltos de línea).
+        pos (tuple): Posición inicial (x, y) del texto.
+        font (pygame.font.Font): Fuente utilizada para renderizar.
+        color (pygame.Color, optional): Color del texto. Default: negro.
+    """
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
     space = font.size(' ')[0]  # The width of a space.
     max_width, max_height = surface.get_size()
@@ -23,6 +34,57 @@ def mostrar_texto(surface, text, pos, font, color=pygame.Color('black')):
         x = pos[0]  # Reset the x.
         y += word_height  # Start on new row.
 
+
+def mostrar_texto_en_rect(surface, text, rect, font, color=pygame.Color('black')):
+    """    La función divide el texto por palabras y genera tantas líneas como sean
+    necesarias para que ninguna exceda el ancho disponible. Luego calcula la
+    altura total generada para centrar el bloque completo dentro del rectángulo.
+
+    Args:
+        surface (pygame.Surface): Superficie donde se dibuja el texto.
+        text (str): Texto a mostrar. Puede incluir saltos de línea.
+        rect (pygame.Rect): Área donde debe ubicarse el texto.
+        font (pygame.font.Font): Fuente usada para renderizar el texto.
+        color (pygame.Color, optional): Color del texto. Por defecto negro.
+
+    """
+    words = [word.split(' ') for word in text.splitlines()]  # palabras por línea
+    space = font.size(' ')[0]
+
+    # Primero armamos todas las líneas renderizadas
+    lines = []
+    for line_words in words:
+        line_surf = []
+        line_width = 0
+        for word in line_words:
+            w_surf = font.render(word, True, color)
+            w_width, w_height = w_surf.get_size()
+
+            if line_width + w_width > rect.width - 10:  
+                # Línea nueva si ya no entra en el ancho
+                lines.append((line_surf, line_width))
+                line_surf = []
+                line_width = 0
+
+            line_surf.append((w_surf, w_width))
+            line_width += w_width + space
+
+        lines.append((line_surf, line_width))
+
+    # Altura total del texto
+    total_height = len(lines) * font.get_height()
+
+    # Coordenada Y inicial para centrar verticalmente
+    y = rect.y + (rect.height - total_height) // 2
+
+    # Dibujamos todas las líneas centradas
+    for line_surf, line_width in lines:
+        x = rect.x + (rect.width - line_width) // 2  # centrar horizontal
+        for surf_word, w_width in line_surf:
+            surface.blit(surf_word, (x, y))
+            x += w_width + space
+        y += font.get_height()
+
 def borrar():
     os.system('clear') #MAC/LINUX
     os.system('clear')
@@ -31,6 +93,11 @@ def borrar():
 
 
 def crear_datos_juego() -> dict:
+    """la funcion crea el diccionario que se va a usar en el juego
+
+    Returns:
+        dict: el diccionario del juego
+    """
     datos_juego = {
         "nombre":"",
         "tiempo_restante":TIEMPO_TOTAL,
@@ -56,6 +123,14 @@ def crear_datos_juego() -> dict:
 
 #obtenemos las preguntas desde un archivo csv
 def cargar_preguntas_desde_csv(ruta:str) -> list:
+    """ nos permite cargar las preguntas desde un archivo csv
+
+    Args:
+        ruta (str): ruta del archivo csv
+
+    Returns:
+        list: devuelve la lista con el json 
+    """
     if type(ruta) == str:
         lista = []
         #abrimos el archivo en modo lectura
@@ -86,6 +161,16 @@ def cargar_preguntas_desde_csv(ruta:str) -> list:
 
 #Actualiza el tiempo
 def actualizar_tiempo(tiempo_inicio:float,datos_juego:dict) -> bool:
+    """Actualiza el tiempo restante del juego según el tiempo transcurrido
+    desde que inició la partida.
+
+    Args:
+        tiempo_inicio (float): Momento en que comenzó el juego (timestamp).
+        datos_juego (dict): Diccionario con los datos actuales del juego.
+
+    Returns:
+        bool: True si se actualizó correctamente, False en caso contrario.
+    """
     if type(datos_juego) == dict:
         retorno = True
         tiempo_fin = time.time()
@@ -98,6 +183,14 @@ def actualizar_tiempo(tiempo_inicio:float,datos_juego:dict) -> bool:
 
 #Modifica la vida
 def modificar_vida(datos_juego:dict,incremento:int) -> bool:
+    """la funcion modifica la cantidad de vidas de acuerdo a la cantidad de incremento recibida por parámetro
+    Args:
+        datos_juego (dict): datos actuales del juego
+        incremento (int): la cantidad por la cual se va aumentar las vidas
+
+    Returns:
+        bool: _description_
+    """
     if type(datos_juego) == dict and datos_juego.get("cantidad_vidas") != None:
         retorno = True
         datos_juego["cantidad_vidas"] += incremento
@@ -108,6 +201,14 @@ def modificar_vida(datos_juego:dict,incremento:int) -> bool:
 
 #Modifica la puntuacion
 def modificar_puntuacion(datos_juego:dict,incremento:int) -> bool:
+    """la funcion modifica la puntuación de acuerdo a la cantidad de incremento recibida por parámetro
+    Args:
+        datos_juego (dict): datos actuales del juego
+        incremento (int): la cantidad por la cual se va aumentar la puntuación
+
+    Returns:
+        bool: _description_
+    """
     if type(datos_juego) == dict and datos_juego.get("puntuacion") != None:
         retorno = True
         datos_juego["puntuacion"] += (incremento)
@@ -116,8 +217,48 @@ def modificar_puntuacion(datos_juego:dict,incremento:int) -> bool:
 
     return retorno
 
+# CREA UNA LISTA DE BOTONES
+def crear_lista_botones(cantidad_botones:int,textura:str,ancho:int,alto:int,x:int,y:int) -> list | None:
+    """Crea una lista de botones utilizando una textura y los posiciona
+    verticalmente uno debajo del otro.
+
+    Args:
+        cantidad_botones (int): Cantidad de botones a generar.
+        textura (str): Ruta de la imagen a usar como textura del botón.
+        ancho (int): Ancho de cada botón.
+        alto (int): Alto de cada botón.
+        x (int): Posición X inicial de los botones.
+        y (int): Posición Y inicial del primer botón.
+
+    Returns:
+        list | None: Lista de botones creados o None si la textura no existe.
+    """
+    if os.path.exists(textura):
+        lista_botones = []
+
+        for i in range(cantidad_botones):
+            boton = crear_elemento_juego(textura,ancho,alto,x,y)
+            lista_botones.append(boton)
+            y += (alto + 15)
+    else:
+        lista_botones = None
+        
+    return lista_botones
+
+
+
 # SUMA UNA VIDA SI RESPONDIÓ CORRECTAMENTE 5 VECES SEGUIDAS
 def sumar_vida(pregunta_actual:dict,datos_juego:dict) -> bool:
+    """Aumenta una vida si la respuesta actual es correcta; de lo contrario
+    descuenta una.
+
+    Args:
+        pregunta_actual (dict): Datos de la pregunta actual.
+        datos_juego (dict): Información del estado del juego.
+
+    Returns:
+        bool: True si la operación fue válida, False en caso contrario.
+    """
     if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
         # AGREGAMOS UNA VIDA MAS
         modificar_vida(datos_juego, 1)
@@ -128,7 +269,19 @@ def sumar_vida(pregunta_actual:dict,datos_juego:dict) -> bool:
                 
 #Verifico que la respuesta sea correcta
 def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,sonido_acierto:pygame.mixer.Sound,sonido_error:pygame.mixer.Sound) -> bool:
+    """
+    Verifica si la respuesta elegida es correcta y actualiza el estado del juego.
 
+    Args:
+        pregunta_actual (dict): Pregunta actual con su respuesta correcta.
+        datos_juego (dict): Datos del juego (vidas, puntuación, comodines, etc.).
+        respuesta (int): Respuesta seleccionada por el jugador.
+        sonido_acierto (pygame.mixer.Sound): Sonido a reproducir si acierta.
+        sonido_error (pygame.mixer.Sound): Sonido a reproducir si falla.
+
+    Returns:
+        bool: True si la respuesta es correcta, False en caso contrario.
+    """
     if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
         if pregunta_actual.get("respuesta_correcta") == respuesta:
             datos_juego["contador_correctas"] += 1
@@ -156,6 +309,15 @@ def verificar_respuesta(pregunta_actual:dict,datos_juego:dict,respuesta:int,soni
     return retorno
 
 def obtener_pregunta_actual(datos_juego:dict,lista_preguntas:list) -> dict | None:
+    """nos permite obtener la pregunta actual
+
+    Args:
+        datos_juego (dict): los datos actuales del juego
+        lista_preguntas (list): la lista total de preguntas
+
+    Returns:
+        dict | None: 'dict' si encontró la pregunta | 'None' si no la encontró
+    """
     if type(lista_preguntas) == list and len(lista_preguntas) > 0 and type(datos_juego) == dict and datos_juego.get("i_pregunta") != None:
         indice = datos_juego.get("i_pregunta")
         pregunta = lista_preguntas[indice]
@@ -166,6 +328,16 @@ def obtener_pregunta_actual(datos_juego:dict,lista_preguntas:list) -> dict | Non
 
 #Pasa de pregunta
 def pasar_pregunta(datos_juego:dict,lista_preguntas:list) -> bool:
+    """
+    Avanza a la siguiente pregunta y valida que el índice no supere el límite.
+
+    Args:
+        datos_juego (dict): Estado del juego, incluyendo el índice de pregunta.
+        lista_preguntas (list): Lista completa de preguntas del juego.
+
+    Returns:
+        bool: True si se pudo avanzar, False si hubo algún error.
+    """
     if type(datos_juego) == dict and datos_juego.get("i_pregunta") != None:
         retorno = True
         datos_juego["i_pregunta"] += 1
@@ -176,6 +348,14 @@ def pasar_pregunta(datos_juego:dict,lista_preguntas:list) -> bool:
     return retorno
 
 def reiniciar_estadisticas(datos_juego:dict) -> bool:
+    """Reiniciamos las estadísticas actuales
+
+    Args:
+        datos_juego (dict): datos actuales del juego
+
+    Returns:
+        bool: 'True' si todo salió bien | 'False' si algo salió mal
+    """
     if type(datos_juego) == dict:
         retorno = True
         datos_juego.update({
@@ -190,6 +370,16 @@ def reiniciar_estadisticas(datos_juego:dict) -> bool:
 
 #Verifica el indice
 def verificar_indice(datos_juego:dict,lista_preguntas:list) -> bool:
+    """
+    Verifica que el índice de pregunta sea válido y reinicia la lista si llega al final.
+
+    Args:
+        datos_juego (dict): Datos del juego, incluyendo el índice actual.
+        lista_preguntas (list): Lista de preguntas disponibles.
+
+    Returns:
+        bool: 'True' si todo salió bien | 'False' si algo salió mal
+    """
     if type(datos_juego) == dict and datos_juego.get("i_pregunta") != None:
         retorno = True
         if datos_juego["i_pregunta"] == len(lista_preguntas):
@@ -202,6 +392,15 @@ def verificar_indice(datos_juego:dict,lista_preguntas:list) -> bool:
 
 #Mezcla la lista de preguntas
 def mezclar_lista(lista_preguntas:list) -> bool:
+    """
+    Mezcla aleatoriamente la lista de preguntas.
+
+    Args:
+        lista_preguntas (list): Lista de preguntas a mezclar.
+
+    Returns:
+        bool: True si la lista se mezcló correctamente, False si ocurrió un error.
+    """
     if type(lista_preguntas) == list and len(lista_preguntas) > 0:
         retorno = True
         random.shuffle(lista_preguntas)
@@ -211,6 +410,15 @@ def mezclar_lista(lista_preguntas:list) -> bool:
     return retorno
 
 def guardar_partida(datos_juego:dict) -> bool:
+    """
+    Guarda la partida actual validando el nombre del jugador y confirmando que los datos se hayan almacenado correctamente.
+
+    Args:
+        datos_juego (dict): Datos actuales del juego (nombre, puntuación, etc.).
+
+    Returns:
+        bool: True si la partida se guardó con éxito, False si falló la validación o el guardado.
+    """
     if type(datos_juego) == dict:
 
         # SETEAMOS UN ESTADO PARA GUARDAR EL RESULTADO DE LA VALIDACION DE LA PARTIDA GUARDADA
@@ -244,6 +452,15 @@ def guardar_partida(datos_juego:dict) -> bool:
     print(nueva_partida)
 
 def cargar_datos(nueva_partida_a_cargar:dict) -> None:
+        """
+    Agrega una nueva partida al archivo partidas.json.
+
+    Args:
+        nueva_partida_a_cargar (dict): Partida a guardar, incluyendo nombre, puntuación y fecha.
+
+    Returns:
+        None
+    """
         # VALIDAMOS QUE LOS DATOS DE LA NUEVA PARTIDA SEA UN DICCIONARIO
         if type(nueva_partida_a_cargar) == dict:
 
@@ -257,40 +474,73 @@ def cargar_datos(nueva_partida_a_cargar:dict) -> None:
             # ESCRIBIMOS EL ARCHIVO JSON CON EL CONTENIDO YA CARGADO
             with open("partidas.json", "w") as archivo:
                 json.dump(partidas, archivo, indent=4)
-
+                
 def validacion_partida_guardada(nueva_partida:dict) -> bool:
-    # VALIDAMOS QUE LOS DATOS DE LA NUEVA PARTIDA SEA UN DICCIONARIO
-    if type(nueva_partida) == dict:
-        estado = None
-        # LEEMOS EL ARCHIVO PARTIDAS.JSON Y GUARDAMOS EL CONTENIDO EN UNA VARIABLE
-        with open("partidas.json", "r") as archivo:
-            partidas = json.load(archivo)
+        """
+    Verifica si la partida recién guardada existe dentro del archivo partidas.json.
 
-        # RECORREMOS EL JSON OBTENIDO DEL ARCHIVO
-        for indice, dato in enumerate(partidas):
+    Args:
+        nueva_partida (dict): Datos de la partida que se desea validar.
 
-            # VALIDAMOS QUE LOS DATOS INGRESADOS DE LA NUEVA PARTIDA EXISTAN DENTRO DEL ARCHIVO
-            if (dato["nombre"] == nueva_partida["nombre"] and dato["puntuacion"] == nueva_partida["puntuacion"] and dato["fecha"] == nueva_partida["fecha"]):
-                estado = True # ACTUALIZAMOS ESTADO Y LO RETORNAMOS
-            else:
-                estado = False # ACTUALIZAMOS ESTADO Y LO RETORNAMOS
-        return estado
+    Returns:
+        bool: True si la partida fue encontrada en el archivo, False en caso contrario.
+    """
     
+        # VALIDAMOS QUE LOS DATOS DE LA NUEVA PARTIDA SEA UN DICCIONARIO
+        if type(nueva_partida) == dict:
+            estado = None
+            # LEEMOS EL ARCHIVO PARTIDAS.JSON Y GUARDAMOS EL CONTENIDO EN UNA VARIABLE
+            with open("partidas.json", "r") as archivo:
+                partidas = json.load(archivo)
+
+            # RECORREMOS EL JSON OBTENIDO DEL ARCHIVO
+            for indice, dato in enumerate(partidas):
+
+                # VALIDAMOS QUE LOS DATOS INGRESADOS DE LA NUEVA PARTIDA EXISTAN DENTRO DEL ARCHIVO
+                if (dato["nombre"] == nueva_partida["nombre"] and dato["puntuacion"] == nueva_partida["puntuacion"] and dato["fecha"] == nueva_partida["fecha"]):
+                    estado = True # ACTUALIZAMOS ESTADO Y LO RETORNAMOS
+                else:
+                    estado = False # ACTUALIZAMOS ESTADO Y LO RETORNAMOS
+            return estado
+        
     
 #GENERAL --> Un elemento de nuestro juego va a tener una superficie (textura) y un rectangulo (coordenadas y su compotamiento)
 def crear_elemento_juego(textura:str,ancho_elemento:int,alto_elemento:int,pos_x:int,pos_y:int) -> dict | None:
-    if os.path.exists(textura):
-        elemento_juego = {}
-        elemento_juego["superficie"] = pygame.image.load(textura)
-        elemento_juego["superficie"] = pygame.transform.scale(elemento_juego["superficie"],(ancho_elemento,alto_elemento))
-        elemento_juego["rectangulo"] = pygame.rect.Rect(pos_x,pos_y,ancho_elemento,alto_elemento)
-    else:
-        elemento_juego = None
+        """
+    Crea un elemento del juego cargando su textura, escalándola y generando su rectángulo asociado.
 
-    return elemento_juego
+    Args:
+        textura (str): Ruta de la imagen a cargar.
+        ancho_elemento (int): Ancho deseado del elemento.
+        alto_elemento (int): Alto deseado del elemento.
+        pos_x (int): Posición X en pantalla.
+        pos_y (int): Posición Y en pantalla.
+
+    Returns:
+        dict | None: Diccionario con superficie y rectángulo, o None si la textura no existe.
+    """
+        if os.path.exists(textura):
+            elemento_juego = {}
+            elemento_juego["superficie"] = pygame.image.load(textura)
+            elemento_juego["superficie"] = pygame.transform.scale(elemento_juego["superficie"],(ancho_elemento,alto_elemento))
+            elemento_juego["rectangulo"] = pygame.rect.Rect(pos_x,pos_y,ancho_elemento,alto_elemento)
+        else:
+            elemento_juego = None
+
+        return elemento_juego
 
 #muestro los datos
 def mostrar_datos_juego_pygame(pantalla:pygame.Surface,datos_juego:dict) -> bool:
+    """
+    Muestra en pantalla la información principal del juego (tiempo, puntuación y vidas).
+
+    Args:
+        pantalla (pygame.Surface): Superficie donde se renderiza el texto.
+        datos_juego (dict): Datos actuales del juego.
+
+    Returns:
+        bool: True si los datos fueron mostrados correctamente, False si ocurrió un error.
+    """
     if type(datos_juego) == dict:
         mostrar_texto(pantalla,f"Tiempo: {datos_juego.get("tiempo_restante")} segundos",(10,10),FUENTE_ARIAL_20)
         mostrar_texto(pantalla,f"Puntuacion: {datos_juego.get("puntuacion")}",(10,40),FUENTE_ARIAL_20)
@@ -303,6 +553,20 @@ def mostrar_datos_juego_pygame(pantalla:pygame.Surface,datos_juego:dict) -> bool
 
 #Crea la lista de respuesta dependiendo la pregunta
 def crear_lista_respuestas(cantidad_respuestas:int,textura:str,ancho:int,alto:int,x:int,y:int) -> list | None:
+    """
+    Crea una lista de cuadros de respuesta posicionados verticalmente a partir de una textura.
+
+    Args:
+        cantidad_respuestas (int): Número de respuestas a generar.
+        textura (str): Ruta de la imagen a usar en cada cuadro.
+        ancho (int): Ancho de cada cuadro de respuesta.
+        alto (int): Alto de cada cuadro de respuesta.
+        x (int): Posición X inicial.
+        y (int): Posición Y inicial.
+
+    Returns:
+        list | None: Lista de cuadros de respuesta creados, o None si la textura no existe.
+    """
     if os.path.exists(textura):
         lista_respuestas = []
 
@@ -316,7 +580,13 @@ def crear_lista_respuestas(cantidad_respuestas:int,textura:str,ancho:int,alto:in
     return lista_respuestas
 
 def obtener_ranking() -> list:
+    """
+    Obtiene las 10 mejores partidas desde el archivo partidas.json,
+    ordenadas por puntuación de mayor a menor.
 
+    Returns:
+        list: Lista con las 10 partidas con mayor puntuación.
+    """
     # RECORREMOS EL ARCHIVO PARTIDAS JSON
     with open("partidas.json", "r") as archivo:
         partidas = json.load(archivo)
@@ -330,8 +600,22 @@ def obtener_ranking() -> list:
 
 #Revisa que bloque de respuesta se clickeo
 def responder_pregunta_pygame(lista_respuestas:list,sonido_acierto:pygame.mixer.Sound,sonido_error: pygame.mixer.Sound,pos_mouse:tuple,lista_preguntas:list,pregunta_actual:dict,datos_juego:dict):
-    #Validar todo que sea correcto
+    """
+    Procesa el clic del jugador sobre una respuesta, valida si es correcta y
+    avanza a la siguiente pregunta según corresponda.
 
+    Args:
+        lista_respuestas (list): Elementos gráficos de las respuestas.
+        sonido_acierto (pygame.mixer.Sound): Sonido al acertar.
+        sonido_error (pygame.mixer.Sound): Sonido al fallar.
+        pos_mouse (tuple): Posición del clic del mouse.
+        lista_preguntas (list): Lista completa de preguntas.
+        pregunta_actual (dict): Pregunta actualmente mostrada.
+        datos_juego (dict): Estado y datos del juego.
+
+    Returns:
+        bool: True si se hizo clic sobre una respuesta, False si se clickeó fuera.
+    """
     #DEVUELVE VERDADERO SI LE DI CLICK A UNA RESPUESTA
     #DEVUELVE FALSE SI LE DI CLICK FUERA DE UNA RESPUESTA
     retorno = False
@@ -375,11 +659,28 @@ def mostrar_comodines(lista_comodines:list,pantalla:pygame.Surface,datos_juego:d
 
 #Muestra la pantalla de juego
 def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregunta:dict,lista_respuestas:dict,lista_comodines:list,pregunta_actual:dict) -> None:
-    pantalla.fill(COLOR_BLANCO)
+    """
+    Dibuja todos los elementos principales de la pantalla de juego para la dificultad "facil":
+    fondo, datos del jugador, pregunta actual, respuestas y comodines.
+
+    Args:
+        pantalla (pygame.Surface): Superficie donde se renderiza la escena.
+        datos_juego (dict): Datos actuales del estado del juego.
+        cuadro_pregunta (dict): Elemento gráfico que contiene la pregunta.
+        lista_respuestas (list): Lista de elementos gráficos de respuestas.
+        lista_comodines (list): Elementos de comodines disponibles.
+        pregunta_actual (dict): Pregunta que se muestra actualmente.
+    """
+    # FONDO
+    fondo_menu = pygame.image.load("texturas/juego.jpg")
+    fondo_menu = pygame.transform.scale(fondo_menu, PANTALLA)
+    
+    # ---- DIBUJAR FONDO ----
+    pantalla.blit(fondo_menu, (0, 0))
     mostrar_datos_juego_pygame(pantalla,datos_juego)
 
 
-    mostrar_texto(cuadro_pregunta["superficie"],f"{pregunta_actual["descripcion"]}",(20,20),FUENTE_ARIAL_30)
+    mostrar_texto(cuadro_pregunta["superficie"], f"{pregunta_actual["descripcion"]}",(20,20),FUENTE_ARIAL_30)
     pantalla.blit(cuadro_pregunta["superficie"],cuadro_pregunta["rectangulo"])
 
     for i in range(len(lista_respuestas)):
@@ -389,6 +690,36 @@ def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregu
     
     mostrar_comodines(lista_comodines,pantalla,datos_juego)
 
+
+def dibujar_pantalla_juego_general(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregunta:dict,lista_respuestas:dict,pregunta_actual:dict) -> None:
+    """
+    Dibuja todos los elementos principales de la pantalla de juego para el resto de dificultades:
+    fondo, datos del jugador, pregunta actual y respuestas
+
+    Args:
+        pantalla (pygame.Surface): Superficie donde se renderiza la escena.
+        datos_juego (dict): Datos actuales del estado del juego.
+        cuadro_pregunta (dict): Elemento gráfico que contiene la pregunta.
+        lista_respuestas (list): Lista de elementos gráficos de respuestas.
+        pregunta_actual (dict): Pregunta que se muestra actualmente.
+    """
+    # FONDO
+    fondo_menu = pygame.image.load("texturas/juego.jpg")
+    fondo_menu = pygame.transform.scale(fondo_menu, PANTALLA)
+    
+    # ---- DIBUJAR FONDO ----
+    pantalla.blit(fondo_menu, (0, 0))
+    mostrar_datos_juego_pygame(pantalla,datos_juego)
+
+    mostrar_datos_juego_pygame(pantalla,datos_juego)
+
+    mostrar_texto(cuadro_pregunta["superficie"],f"{pregunta_actual["descripcion"]}",(20,20),FUENTE_ARIAL_30)
+    pantalla.blit(cuadro_pregunta["superficie"],cuadro_pregunta["rectangulo"])
+
+    for i in range(len(lista_respuestas)):
+        mostrar_texto(lista_respuestas[i]["superficie"],f"{pregunta_actual.get(f"respuesta_{i+1}")}",(10,10),FUENTE_ARIAL_20,COLOR_BLANCO)
+        pantalla.blit(lista_respuestas[i]["superficie"],lista_respuestas[i]["rectangulo"])
+    
 
 
 

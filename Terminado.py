@@ -4,6 +4,12 @@ from Funciones import *
 
 pygame.init()
 
+# FONDO
+fondo_menu = pygame.image.load("texturas/perdida.jpg")
+fondo_menu = pygame.transform.scale(fondo_menu, PANTALLA)
+    
+
+
 def mostrar_game_over(pantalla, cola_eventos, datos_juego):
     ventana = "terminado"
 
@@ -40,8 +46,9 @@ def mostrar_game_over(pantalla, cola_eventos, datos_juego):
                     datos_juego["error_nombre"] = True
 
     # -------- INTERFAZ GRÁFICA--------
-    pantalla.fill(COLOR_BLANCO)
-    mostrar_texto(pantalla, f"PERDISTE EL JUEGO: {datos_juego['puntuacion']}", (100,50), FUENTE_ARIAL_50, COLOR_NEGRO)
+    pantalla.blit(fondo_menu, (0, 0))
+    mostrar_datos_juego_pygame(pantalla,datos_juego)
+    mostrar_texto(pantalla, f"PERDISTE EL JUEGO: {datos_juego['puntuacion']}", (100,80), FUENTE_ARIAL_50, COLOR_BLANCO)
     mostrar_texto(pantalla, "INGRESE SU NOMBRE:", (180,200), FUENTE_ARIAL_20, COLOR_NEGRO)
     mostrar_texto(cuadro_texto["superficie"], datos_juego["nombre"], (10,10), FUENTE_ARIAL_30, COLOR_BLANCO)
     pantalla.blit(cuadro_texto["superficie"], cuadro_texto["rectangulo"])
