@@ -6,7 +6,16 @@ pygame.init()
 
 boton_volver = crear_elemento_juego("texturas/textura_respuesta.jpg",100,40,10,10)
 
-def mostrar_rankings(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],lista_rankings:list) -> str:
+def mostrar_rankings(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event]) -> str:
+    """muestra el top 10 de los mejores jugadores
+
+    Args:
+        pantalla (pygame.Surface): pantalla actual
+        cola_eventos (list[pygame.event.Event]): cola de eventos recibida por parámetro
+
+    Returns:
+        str: retorna la ventana actual
+    """
     ventana = "rankings"
     
     y_base = 150  # posición inicial en Y

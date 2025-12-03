@@ -14,7 +14,19 @@ fondo_prueba = crear_elemento_juego("texturas/fondo.jpg",500,200,50,70)
 
 
 #Administra los botones de el menu de configuracion (Collide, sonido, etc)
-def administrar_botones(boton_suma:dict,boton_resta:dict,boton_volver:dict,datos_juego:dict,pos_mouse:tuple,back_up:int) -> str:
+def administrar_botones(boton_suma:dict,boton_resta:dict,boton_volver:dict,datos_juego:dict,pos_mouse:tuple) -> str:
+    """administra los botones de la pantalla
+
+    Args:
+        boton_suma (dict): suma
+        boton_resta (dict): resta
+        boton_volver (dict): vuelve
+        datos_juego (dict): los datos actuales del juego
+        pos_mouse (tuple): posición del ratón
+
+    Returns:
+        str: retorna la ventana actual
+    """
     ventana = "ajustes"
 
     if boton_on["rectangulo"].collidepoint(pos_mouse):
@@ -41,12 +53,21 @@ def administrar_botones(boton_suma:dict,boton_resta:dict,boton_volver:dict,datos
 
 #Muestra el menu de ajustes
 def mostrar_ajustes(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],datos_juego:dict) -> str:
+    """muestra los ajustes del juego
+
+    Args:
+        pantalla (pygame.Surface): pantalla actual
+        cola_eventos (list[pygame.event.Event]): eventos recibidos
+        datos_juego (dict): los datos actuales
+
+    Returns:
+        str: retorna la ventana actual
+    """
     ventana = "ajustes"
-    back_up = datos_juego["volumen_musica"]
     
     for evento in cola_eventos:
         if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
-            ventana = administrar_botones(boton_suma,boton_resta,boton_volver,datos_juego,evento.pos,back_up)
+            ventana = administrar_botones(boton_suma,boton_resta,boton_volver,datos_juego,evento.pos)
     
     pantalla.fill(COLOR_BLANCO)
     pantalla.blit(fondo_prueba["superficie"],fondo_prueba["rectangulo"])
