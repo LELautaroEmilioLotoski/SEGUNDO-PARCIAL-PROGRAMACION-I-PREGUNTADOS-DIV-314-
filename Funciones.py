@@ -23,6 +23,45 @@ def mostrar_texto(surface, text, pos, font, color=pygame.Color('black')):
         x = pos[0]  # Reset the x.
         y += word_height  # Start on new row.
 
+
+def mostrar_texto_en_rect(surface, text, rect, font, color=pygame.Color('black')):
+    words = [word.split(' ') for word in text.splitlines()]  # palabras por línea
+    space = font.size(' ')[0]
+
+    # Primero armamos todas las líneas renderizadas
+    lines = []
+    for line_words in words:
+        line_surf = []
+        line_width = 0
+        for word in line_words:
+            w_surf = font.render(word, True, color)
+            w_width, w_height = w_surf.get_size()
+
+            if line_width + w_width > rect.width - 10:  
+                # Línea nueva si ya no entra en el ancho
+                lines.append((line_surf, line_width))
+                line_surf = []
+                line_width = 0
+
+            line_surf.append((w_surf, w_width))
+            line_width += w_width + space
+
+        lines.append((line_surf, line_width))
+
+    # Altura total del texto
+    total_height = len(lines) * font.get_height()
+
+    # Coordenada Y inicial para centrar verticalmente
+    y = rect.y + (rect.height - total_height) // 2
+
+    # Dibujamos todas las líneas centradas
+    for line_surf, line_width in lines:
+        x = rect.x + (rect.width - line_width) // 2  # centrar horizontal
+        for surf_word, w_width in line_surf:
+            surface.blit(surf_word, (x, y))
+            x += w_width + space
+        y += font.get_height()
+
 def borrar():
     os.system('clear') #MAC/LINUX
     os.system('clear')

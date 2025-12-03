@@ -11,6 +11,7 @@ from Configuracion import *
 from Pantalla_dificultad import *
 from Terminado import *
 from Ajustes_dificultad import *
+from agregar_pregunta import *
 
 pygame.init()
 pygame.display.set_caption("PREGUNTADOS")
@@ -61,7 +62,8 @@ while True:
 
     elif ventana_actual == "configuracion":
         ventana_actual, inputs_usuario = ajustar_dificultad(pantalla,cola_eventos,datos_juego,lista_preguntas)
-
+    elif ventana_actual == "agregar pregunta":
+        ventana_actual = agregar_pregunta_a_mano(pantalla,cola_eventos,datos_juego)
     elif ventana_actual == "rankings":
         ventana_actual = mostrar_rankings(pantalla,cola_eventos,lista_rankings)        
     elif ventana_actual == "ajustes":
