@@ -4,6 +4,19 @@ from Constantes import *
 
 # CREA UNA LISTA DE BOTONES
 def crear_lista_botones(cantidad_botones:int,textura:str,ancho:int,alto:int,x:int,y:int) -> list | None:
+    """crea la lista de los botones para usar
+
+    Args:
+        cantidad_botones (int): cantidad
+        textura (str): textura del boton
+        ancho (int): ancho del boton
+        alto (int): alto del boton
+        x (int): posicion x del boton
+        y (int): posicion y del boton
+
+    Returns:
+        list | None: retorna la lista creada o None si algo salió mal
+    """
     if os.path.exists(textura):
         lista_botones = []
 
@@ -43,7 +56,17 @@ inputs_usuario = {
 }
 
 
-def ajustar_dificultad(pantalla:pygame.Surface, cola_eventos:list[pygame.event.Event], datos_juego:dict, lista_preguntas:list):
+def ajustar_dificultad(pantalla:pygame.Surface, cola_eventos:list[pygame.event.Event], datos_juego:dict) -> str | dict:
+    """ajusta la dificultad de acuerdo a lo que eliga el jugador
+
+    Args:
+        pantalla (pygame.Surface): pantalla actual
+        cola_eventos (list[pygame.event.Event]): eventos recibidos
+        datos_juego (dict): datos actuales del juego
+
+    Returns:
+        str | dict: retorna la ventana actual y el diccionario de los inputs de usuario
+    """
     global boton_seleccionado    
     ventana = "configuracion"
 
