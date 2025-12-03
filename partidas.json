@@ -128,5 +128,15 @@
         "nombre": "xd",
         "puntuacion": 875,
         "fecha": "2025-12-02 23:46:56"
+    },
+    {
+        "nombre": "pedro",
+        "puntuacion": 650,
+        "fecha": "2025-12-03 00:39:10"
+    },
+    {
+        "nombre": "JIJUIJ",
+        "puntuacion": -75,
+        "fecha": "2025-12-03 00:46:42"
     }
 ]

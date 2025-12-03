@@ -70,6 +70,8 @@ def seleccionar_dificultad(pantalla: pygame.Surface, cola_eventos: list[pygame.e
             FUENTE_ARIAL_30,
             COLOR_BLANCO
         )
+    
+    mostrar_texto(pantalla, "ELIGE LA DIFICULTAD CON LA CUAL QUERÉS JUGAR:", (150,50), FUENTE_ARIAL_30, COLOR_NEGRO)
 
     pantalla.blit(boton_volver["superficie"],boton_volver["rectangulo"])
     mostrar_texto(pantalla,"VOLVER",(boton_volver["rectangulo"].x + 5, boton_volver["rectangulo"].y + 5),FUENTE_ARIAL_20,COLOR_BLANCO)

@@ -10,6 +10,20 @@ pygame.time.set_timer(evento_1_s,1000)
 lista_imagenes = ["texturas_comodines/Bomba.png","texturas_comodines/db.png","texturas_comodines/pass.png","texturas_comodines/x2.png"]
 
 def crear_lista_botones_comodines(cantidad_botones:int,texturas:list,ancho:int,alto:int,x:int,y:int) -> list | None:
+    """
+    Crea y devuelve una lista de botones de comodines usando distintas texturas.
+
+    Args:
+        cantidad_botones (int): Cantidad total de botones a generar.
+        texturas (list): Lista de rutas de imagen para cada botón.
+        ancho (int): Ancho de cada botón.
+        alto (int): Alto de cada botón.
+        x (int): Posición X inicial.
+        y (int): Posición Y inicial.
+
+    Returns:
+        list | None: Lista de botones generados o None si falla alguna textura.
+    """
     lista_botones = []
 
     for i in range(cantidad_botones):
@@ -25,6 +39,20 @@ def crear_lista_botones_comodines(cantidad_botones:int,texturas:list,ancho:int,a
 
 
 def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],datos_juego:dict, lista_preguntas:list, dificultad_elegida: str) -> str:
+    """
+    Dirige el flujo del juego según la dificultad seleccionada y devuelve
+    el nombre de la ventana a mostrar a continuación.
+
+    Args:
+        pantalla (pygame.Surface): Superficie principal donde se dibuja el juego.
+        cola_eventos (list[pygame.event.Event]): Lista de eventos capturados por pygame.
+        datos_juego (dict): Datos actuales del estado del juego.
+        lista_preguntas (list): Lista completa de preguntas cargadas.
+        dificultad_elegida (str): Dificultad seleccionada por el usuario.
+
+    Returns:
+        str: Nombre de la ventana siguiente (por ejemplo, "jugar", "menu", "ajustes", etc.).
+    """
     ventana = "jugar"
     
     # SI LA DIFICULTAD ESCOGIDA ES LA FACIL:
@@ -42,6 +70,19 @@ def mostrar_juego(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],
 
 
 def dificultad_facil(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],datos_juego:dict, lista_preguntas:list) -> str:
+    """
+    Controla la lógica del juego en modo fácil, manejando eventos,
+    comodines, tiempo y vidas. Devuelve la ventana siguiente.
+
+    Args:
+        pantalla (pygame.Surface): Superficie principal del juego.
+        cola_eventos (list[pygame.event.Event]): Eventos capturados por pygame.
+        datos_juego (dict): Estado actual del juego (vidas, puntaje, tiempo, etc.).
+        lista_preguntas (list): Lista completa de preguntas disponibles.
+
+    Returns:
+        str: Nombre de la ventana siguiente ("jugar", "terminado", etc.).
+    """    
     ventana = "jugar"
     pregunta_actual = obtener_pregunta_actual(datos_juego,lista_preguntas)
     cuadro_pregunta = crear_elemento_juego("texturas/textura_pregunta.jpg",ANCHO_PREGUNTA,ALTO_PREGUNTA,125,125)
@@ -92,6 +133,19 @@ def dificultad_facil(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Even
 # MISMA DINÁMICA QUE EL NIVEL FÁCIL, PERO SIN LA POSIBILIDAD DE USAR COMODINES
 
 def dificultad_media(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],datos_juego:dict, lista_preguntas:list) -> str:
+    """
+    Controla la lógica del juego en modo medio, manejando eventos,
+    tiempo y vidas. Devuelve la ventana siguiente.
+
+    Args:
+        pantalla (pygame.Surface): Superficie principal del juego.
+        cola_eventos (list[pygame.event.Event]): Eventos capturados por pygame.
+        datos_juego (dict): Estado actual del juego (vidas, puntaje, tiempo, etc.).
+        lista_preguntas (list): Lista completa de preguntas disponibles.
+
+    Returns:
+        str: Nombre de la ventana siguiente ("jugar", "terminado", etc.).
+    """
     ventana = "jugar"
     pregunta_actual = obtener_pregunta_actual(datos_juego,lista_preguntas)
     cuadro_pregunta = crear_elemento_juego("texturas/textura_pregunta.jpg",ANCHO_PREGUNTA,ALTO_PREGUNTA,125,125)
@@ -125,6 +179,19 @@ def dificultad_media(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Even
 
 
 def dificultad_dificil(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event],datos_juego:dict, lista_preguntas:list) -> str:
+    """
+    Controla la lógica del juego en modo dificil, manejando eventos,
+    tiempo y vidas. Devuelve la ventana siguiente.
+
+    Args:
+        pantalla (pygame.Surface): Superficie principal del juego.
+        cola_eventos (list[pygame.event.Event]): Eventos capturados por pygame.
+        datos_juego (dict): Estado actual del juego (vidas, puntaje, tiempo, etc.).
+        lista_preguntas (list): Lista completa de preguntas disponibles.
+
+    Returns:
+        str: Nombre de la ventana siguiente ("jugar", "terminado", etc.).
+    """
     ventana = "jugar"
     
     # SETEAMOS PARA QUE ARRANQUE CON UNA SOLA VIDA:
@@ -172,6 +239,23 @@ def dificultad_dificil(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Ev
 
 # DIFICULTAD PERSONALIZADA
 def dificultad_personalizada(pantalla: pygame.Surface, cola_eventos: list[pygame.event.Event], datos_juego: dict, lista_preguntas: list) -> str:
+    """
+    Ejecuta la lógica del juego en modo personalizado.
+
+    - Inicializa la primera pregunta y los elementos gráficos solo la primera vez.
+    - Procesa clics en las respuestas y avanza a la siguiente pregunta.
+    - Resta tiempo, actualiza vidas y detecta fin del juego.
+    - Dibuja todo en pantalla.
+
+    Args:
+        pantalla: superficie donde se dibuja el juego.
+        cola_eventos: lista de eventos de pygame.
+        datos_juego: estado actual del juego (vidas, tiempo, pregunta, etc.).
+        lista_preguntas: todas las preguntas disponibles.
+
+    Returns:
+        str: "jugar" mientras continúe, "terminado" si se acabaron vidas o tiempo.
+    """
     ventana = "jugar"
 
     # ---- Inicializar solo la primera vez ----
