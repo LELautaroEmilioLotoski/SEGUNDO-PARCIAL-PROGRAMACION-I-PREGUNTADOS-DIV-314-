@@ -9,7 +9,7 @@ boton_off = crear_elemento_juego("texturas/OFF.png", 120, 90, 430, 80)
 boton_suma = crear_elemento_juego("texturas/mas.webp",60,60,250,200)
 boton_resta = crear_elemento_juego("texturas/menos.webp",60,60,50,200)
 boton_volver = crear_elemento_juego("texturas/textura_respuesta.jpg",100,40,10,10)
-fondo_prueba = crear_elemento_juego("texturas/Fondo_de_prueba.png",500,200,50,70)
+fondo_prueba = crear_elemento_juego("texturas/fondo.jpg",500,200,50,70)
 
 
 

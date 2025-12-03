@@ -5,6 +5,11 @@ from Funciones import *
 pygame.init()
 boton_volver = crear_elemento_juego("texturas/textura_respuesta.jpg",100,40,10,10)
 
+# FONDO
+fondo_menu = pygame.image.load("texturas/fondo.jpg")
+fondo_menu = pygame.transform.scale(fondo_menu, PANTALLA)
+
+
 # ---- LISTA DE BOTONES (texto, posición Y) ----
 botones_info = [
     (DIFICULTAD_FACIL, 150),
@@ -36,7 +41,6 @@ def seleccionar_dificultad(pantalla: pygame.Surface, cola_eventos: list[pygame.e
             for boton, nombre_boton in lista_botones:
                 if boton["rectangulo"].collidepoint(evento.pos):
                     CLICK_SONIDO.play()
-                    print(f"HOLA SOY EL BOTON: {nombre_boton}")
                     
                     # SETEAMOS EL VALOR DE LA DIFICULTAD CON EL BOTON CORRESPONDIENTE
                     dificultad = nombre_boton
@@ -49,7 +53,8 @@ def seleccionar_dificultad(pantalla: pygame.Surface, cola_eventos: list[pygame.e
                         ventana = "jugar"
                     
 
-    pantalla.fill(COLOR_BLANCO)
+    # ---- DIBUJAR FONDO ----
+    pantalla.blit(fondo_menu, (0, 0))
 
     # ---- DIBUJAR BOTONES + TEXTO ----
     for boton, texto in lista_botones:

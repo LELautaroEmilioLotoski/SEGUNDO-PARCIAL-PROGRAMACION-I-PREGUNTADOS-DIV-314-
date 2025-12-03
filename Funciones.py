@@ -391,7 +391,12 @@ def mostrar_comodines(lista_comodines:list,pantalla:pygame.Surface,datos_juego:d
 
 #Muestra la pantalla de juego
 def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregunta:dict,lista_respuestas:dict,lista_comodines:list,pregunta_actual:dict) -> None:
-    pantalla.fill(COLOR_BLANCO)
+    # FONDO
+    fondo_menu = pygame.image.load("texturas/juego.jpg")
+    fondo_menu = pygame.transform.scale(fondo_menu, PANTALLA)
+    
+    # ---- DIBUJAR FONDO ----
+    pantalla.blit(fondo_menu, (0, 0))
     mostrar_datos_juego_pygame(pantalla,datos_juego)
 
 
@@ -407,7 +412,15 @@ def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregu
 
 
 def dibujar_pantalla_juego_general(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregunta:dict,lista_respuestas:dict,pregunta_actual:dict) -> None:
-    pantalla.fill(COLOR_BLANCO)
+
+    # FONDO
+    fondo_menu = pygame.image.load("texturas/juego.jpg")
+    fondo_menu = pygame.transform.scale(fondo_menu, PANTALLA)
+    
+    # ---- DIBUJAR FONDO ----
+    pantalla.blit(fondo_menu, (0, 0))
+    mostrar_datos_juego_pygame(pantalla,datos_juego)
+
     mostrar_datos_juego_pygame(pantalla,datos_juego)
 
     mostrar_texto(cuadro_pregunta["superficie"],f"{pregunta_actual["descripcion"]}",(20,20),FUENTE_ARIAL_30)

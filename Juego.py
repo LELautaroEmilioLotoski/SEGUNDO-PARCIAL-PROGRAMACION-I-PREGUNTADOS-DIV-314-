@@ -9,7 +9,6 @@ evento_1_s = pygame.USEREVENT
 pygame.time.set_timer(evento_1_s,1000)
 lista_imagenes = ["texturas_comodines/Bomba.png","texturas_comodines/db.png","texturas_comodines/pass.png","texturas_comodines/x2.png"]
 
-
 def crear_lista_botones_comodines(cantidad_botones:int,texturas:list,ancho:int,alto:int,x:int,y:int) -> list | None:
     lista_botones = []
 

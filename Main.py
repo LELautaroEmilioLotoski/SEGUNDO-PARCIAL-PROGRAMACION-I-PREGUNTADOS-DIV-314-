@@ -14,7 +14,7 @@ from Ajustes_dificultad import *
 
 pygame.init()
 pygame.display.set_caption("PREGUNTADOS")
-icono = pygame.image.load("texturas/icono.png")
+icono = pygame.image.load("texturas/icono.jpg")
 pygame.display.set_icon(icono)
 lista_preguntas = cargar_preguntas_desde_csv("preguntas.csv")
 
