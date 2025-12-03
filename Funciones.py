@@ -116,6 +116,22 @@ def modificar_puntuacion(datos_juego:dict,incremento:int) -> bool:
 
     return retorno
 
+# CREA UNA LISTA DE BOTONES
+def crear_lista_botones(cantidad_botones:int,textura:str,ancho:int,alto:int,x:int,y:int) -> list | None:
+    if os.path.exists(textura):
+        lista_botones = []
+
+        for i in range(cantidad_botones):
+            boton = crear_elemento_juego(textura,ancho,alto,x,y)
+            lista_botones.append(boton)
+            y += (alto + 15)
+    else:
+        lista_botones = None
+        
+    return lista_botones
+
+
+
 # SUMA UNA VIDA SI RESPONDIÓ CORRECTAMENTE 5 VECES SEGUIDAS
 def sumar_vida(pregunta_actual:dict,datos_juego:dict) -> bool:
     if type(pregunta_actual) == dict and pregunta_actual.get("respuesta_correcta") != None:
@@ -389,6 +405,18 @@ def dibujar_pantalla_juego(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregu
     
     mostrar_comodines(lista_comodines,pantalla,datos_juego)
 
+
+def dibujar_pantalla_juego_general(pantalla:pygame.Surface,datos_juego:dict,cuadro_pregunta:dict,lista_respuestas:dict,pregunta_actual:dict) -> None:
+    pantalla.fill(COLOR_BLANCO)
+    mostrar_datos_juego_pygame(pantalla,datos_juego)
+
+    mostrar_texto(cuadro_pregunta["superficie"],f"{pregunta_actual["descripcion"]}",(20,20),FUENTE_ARIAL_30)
+    pantalla.blit(cuadro_pregunta["superficie"],cuadro_pregunta["rectangulo"])
+
+    for i in range(len(lista_respuestas)):
+        mostrar_texto(lista_respuestas[i]["superficie"],f"{pregunta_actual.get(f"respuesta_{i+1}")}",(10,10),FUENTE_ARIAL_20,COLOR_BLANCO)
+        pantalla.blit(lista_respuestas[i]["superficie"],lista_respuestas[i]["rectangulo"])
+    
 
 
 

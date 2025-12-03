@@ -8,7 +8,9 @@ from Menu import *
 from Juego import *
 from Rankings import *
 from Configuracion import *
+from Pantalla_dificultad import *
 from Terminado import *
+from Ajustes_dificultad import *
 
 pygame.init()
 pygame.display.set_caption("PREGUNTADOS")
@@ -23,6 +25,7 @@ reloj = pygame.time.Clock()
 ventana_actual = "menu"
 bandera_juego = False
 lista_rankings = []
+dificultad_elegida = None
 
 #UNICO WHILE INFINITO DEL JUEGO 
 while True:
@@ -38,12 +41,27 @@ while True:
     if ventana_actual == "menu":
         reiniciar_estadisticas(datos_juego)
         ventana_actual = mostrar_menu(pantalla,cola_eventos)
+        
     elif ventana_actual == "jugar":
         if bandera_juego == False:
             musica_activa(datos_juego)
             random.shuffle(lista_preguntas)
             bandera_juego = True
-        ventana_actual = mostrar_juego(pantalla,cola_eventos,datos_juego,lista_preguntas)
+
+        if dificultad_elegida == None:
+            ventana_actual = "dificultad"
+        else:
+            ventana_actual = mostrar_juego(pantalla,cola_eventos,datos_juego,lista_preguntas,dificultad_elegida)
+
+    elif ventana_actual == "dificultad":
+        ventana_actual, dificultad = seleccionar_dificultad(pantalla, cola_eventos)
+        
+        if dificultad is not None:
+            dificultad_elegida = dificultad
+
+    elif ventana_actual == "configuracion":
+        ventana_actual, inputs_usuario = ajustar_dificultad(pantalla,cola_eventos,datos_juego,lista_preguntas)
+
     elif ventana_actual == "rankings":
         ventana_actual = mostrar_rankings(pantalla,cola_eventos,lista_rankings)        
     elif ventana_actual == "ajustes":

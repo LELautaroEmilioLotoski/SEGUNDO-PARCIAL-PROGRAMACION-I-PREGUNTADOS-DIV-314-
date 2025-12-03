@@ -37,7 +37,11 @@ FUENTE_ARIAL_30 = pygame.font.SysFont("Arial",30)
 FUENTE_ARIAL_50 = pygame.font.SysFont("Arial",50)
 
 #SONIDOS
-
 CLICK_SONIDO = pygame.mixer.Sound("sonidos/click.mp3")
 ERROR_SONIDO = pygame.mixer.Sound("sonidos/error.mp3")
 
+#TIPOS DE DIFICULTADES:
+DIFICULTAD_FACIL = "FACIL"
+DIFICULTAD_MEDIA = "MEDIO"
+DIFICULTAD_DIFICIL = "DIFICIL"
+DIFICULTAD_PERSONALIZADA = "PERSONALIZADO"

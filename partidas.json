@@ -1,42 +1,122 @@
 [
     {
-        "nombre": "juan",
-        "puntuacion": 450,
-        "fecha": "2025-12-01 19:07:57"
-    },
-    {
-        "nombre": "PEPITO",
-        "puntuacion": 875,
-        "fecha": "2025-12-01 19:34:41"
-    },
-    {
-        "nombre": "rodrigo",
-        "puntuacion": 650,
-        "fecha": "2025-12-01 19:49:29"
-    },
-    {
-        "nombre": "el pepe",
-        "puntuacion": 875,
-        "fecha": "2025-12-01 19:55:48"
-    },
-    {
-        "nombre": "pedro",
-        "puntuacion": 25,
-        "fecha": "2025-12-01 20:05:57"
-    },
-    {
-        "nombre": "p",
-        "puntuacion": 125,
-        "fecha": "2025-12-01 20:06:19"
-    },
-    {
-        "nombre": "homero",
+        "nombre": "pepe",
         "puntuacion": 500,
-        "fecha": "2025-12-01 20:09:54"
+        "fecha": "2025-12-02 18:44:34"
     },
     {
-        "nombre": "campeon",
-        "puntuacion": 1200,
-        "fecha": "2025-12-01 20:22:25"
+        "nombre": "pepe",
+        "puntuacion": 200,
+        "fecha": "2025-12-02 18:59:29"
+    },
+    {
+        "nombre": "perez",
+        "puntuacion": 375,
+        "fecha": "2025-12-02 19:01:42"
+    },
+    {
+        "nombre": "jeremias",
+        "puntuacion": 400,
+        "fecha": "2025-12-02 19:02:22"
+    },
+    {
+        "nombre": "pololo",
+        "puntuacion": 400,
+        "fecha": "2025-12-02 19:02:42"
+    },
+    {
+        "nombre": "pepe",
+        "puntuacion": 25,
+        "fecha": "2025-12-02 20:45:21"
+    },
+    {
+        "nombre": "pepe 2",
+        "puntuacion": 175,
+        "fecha": "2025-12-02 20:46:20"
+    },
+    {
+        "nombre": "toto",
+        "puntuacion": 25,
+        "fecha": "2025-12-02 21:06:48"
+    },
+    {
+        "nombre": "s",
+        "puntuacion": 225,
+        "fecha": "2025-12-02 21:06:54"
+    },
+    {
+        "nombre": "poloto",
+        "puntuacion": 925,
+        "fecha": "2025-12-02 21:20:50"
+    },
+    {
+        "nombre": "keke",
+        "puntuacion": 25,
+        "fecha": "2025-12-02 21:22:05"
+    },
+    {
+        "nombre": "coco",
+        "puntuacion": 400,
+        "fecha": "2025-12-02 21:22:27"
+    },
+    {
+        "nombre": "pololo",
+        "puntuacion": 700,
+        "fecha": "2025-12-02 21:27:46"
+    },
+    {
+        "nombre": "kmjn k",
+        "puntuacion": -25,
+        "fecha": "2025-12-02 21:28:41"
+    },
+    {
+        "nombre": "ojj",
+        "puntuacion": 25,
+        "fecha": "2025-12-02 21:30:32"
+    },
+    {
+        "nombre": "ppp",
+        "puntuacion": 700,
+        "fecha": "2025-12-02 21:30:46"
+    },
+    {
+        "nombre": ",m lkmkmjk",
+        "puntuacion": -25,
+        "fecha": "2025-12-02 21:31:04"
+    },
+    {
+        "nombre": "popo",
+        "puntuacion": -75,
+        "fecha": "2025-12-02 21:38:57"
+    },
+    {
+        "nombre": "asdsa",
+        "puntuacion": 25,
+        "fecha": "2025-12-02 21:39:01"
+    },
+    {
+        "nombre": "jiuj",
+        "puntuacion": 225,
+        "fecha": "2025-12-02 21:39:07"
+    },
+    {
+        "nombre": "dsdsa",
+        "puntuacion": 200,
+        "fecha": "2025-12-02 21:39:13"
+    },
+    {
+        "nombre": "s",
+        "puntuacion": 75,
+        "fecha": "2025-12-02 21:39:18"
+    },
+    {
+        "nombre": "ss",
+        "puntuacion": 75,
+        "fecha": "2025-12-02 21:39:24"
+    },
+    {
+        "nombre": "ppopoo",
+        "puntuacion": 450,
+        "fecha": "2025-12-02 21:39:48"
     }
 ]

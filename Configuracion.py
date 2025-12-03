@@ -4,13 +4,6 @@ from Funciones import *
 
 pygame.init()
 
-# boton_on = crear_elemento_juego("MENU PYGAME 314/texturas/ON.png", 120, 90, 430, 80)
-# boton_off = crear_elemento_juego("MENU PYGAME 314/texturas/OFF.png", 120, 90, 430, 80)
-# boton_suma = crear_elemento_juego("MENU PYGAME 314/texturas/mas.webp",60,60,250,200)
-# boton_resta = crear_elemento_juego("MENU PYGAME 314/texturas/menos.webp",60,60,50,200)
-# boton_volver = crear_elemento_juego("MENU PYGAME 314/texturas/textura_respuesta.jpg",100,40,10,10)
-# fondo_prueba = crear_elemento_juego("MENU PYGAME 314/texturas/Fondo_de_prueba.png",500,200,50,70)
-
 boton_on = crear_elemento_juego("texturas/ON.png", 120, 90, 430, 80)
 boton_off = crear_elemento_juego("texturas/OFF.png", 120, 90, 430, 80)
 boton_suma = crear_elemento_juego("texturas/mas.webp",60,60,250,200)
@@ -23,7 +16,6 @@ fondo_prueba = crear_elemento_juego("texturas/Fondo_de_prueba.png",500,200,50,70
 #Administra los botones de el menu de configuracion (Collide, sonido, etc)
 def administrar_botones(boton_suma:dict,boton_resta:dict,boton_volver:dict,datos_juego:dict,pos_mouse:tuple,back_up:int) -> str:
     ventana = "ajustes"
-
 
     if boton_on["rectangulo"].collidepoint(pos_mouse):
         datos_juego["musica_activa"] = not datos_juego["musica_activa"] # Cambiar estado (True -> False o False -> True)
@@ -74,3 +66,4 @@ def mostrar_ajustes(pantalla:pygame.Surface,cola_eventos:list[pygame.event.Event
     mostrar_texto(boton_volver["superficie"],"VOLVER",(5,5),FUENTE_ARIAL_20,COLOR_BLANCO)
 
     return ventana
+
